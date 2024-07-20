@@ -29,10 +29,11 @@ This ERD illustrates the relationships between various entities in the Medical R
 ## Diagram
 Below is the ERD for the Medical Records Management System:
 
-![Medical Records Management System ERD](Screenshot%202024-07-20%20063842.png)
+![Screenshot 2024-07-20 063842](https://github.com/user-attachments/assets/7ceffebc-2d20-4a82-95a7-5ab85a335059)
 
 For detailed information, please refer to the [Medical Records Management System Documentation](file-h0Tvqgj7bFabkCvqpVk0DWS6).
 
 ---
 
 Make sure the image file `Screenshot 2024-07-20 063842.png` is in the same directory as the README file, or adjust the path accordingly if it's located elsewhere. This ensures the image will appear correctly when viewing the README.
+
