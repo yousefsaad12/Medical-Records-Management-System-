@@ -27,9 +27,6 @@ Below is the ERD for the Medical Records Management System:
 
 ![Screenshot 2024-07-20 063842](https://github.com/user-attachments/assets/7ceffebc-2d20-4a82-95a7-5ab85a335059)
 
-Certainly! Here's a description for your README file based on the ER diagram you provided:
-
----
 
 ## Entity-Relationship Diagram for Medical Records Management System
 
