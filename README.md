@@ -138,7 +138,6 @@ The following Entity-Relationship (ER) diagram represents the database schema fo
 - **medication_id** (Foreign Key): References the medication.
 
 ## Diagram
-Below is the ER for the Medical Records Management System:
 ![drawSQL-image-export-2024-07-23](https://github.com/user-attachments/assets/56893f9d-e9a4-4bf2-bbad-6eb283ddd4c1)
 
 
