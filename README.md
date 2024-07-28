@@ -165,6 +165,9 @@ Allows doctors to review their prescription history, including details of the me
 ![Doctor Views](https://github.com/user-attachments/assets/7ac04be7-0728-46c0-a108-76bf04fb1ae6)
 
 
+
+
+
 # Appointment Stored Procedures
 
 This repository contains SQL scripts to create stored procedures for managing appointments, including creating, updating, and deleting appointments.
