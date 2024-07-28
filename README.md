@@ -127,3 +127,86 @@ These stored procedures provide a robust way to manage doctor records in the dat
 
 ### Code
 ![DoctorStored Prod](https://github.com/user-attachments/assets/1ce5e9c4-b30c-472f-9e52-a67a184b37f3)
+
+
+
+
+# Doctor Views 
+
+This repository contains SQL scripts to create views that provide various insights and details about doctors, their appointments, financial impacts, and prescription histories.
+
+## Views Overview
+
+### 1. `GetAllDoctor`
+Provides a comprehensive list of all doctors.
+
+### 2. `DoctorsAppointments`
+Provides doctors with a comprehensive list of their appointments, including patient details and the status of each appointment.
+
+### 3. `Doctors_Comprehensive_Financial_Impact`
+Provides a comprehensive view of the financial impact of a doctor's services, including billing details and revenue generated per department.
+
+### 4. `Doctors_Prescription_History`
+Allows doctors to review their prescription history, including details of the medications prescribed to patients.
+
+## Usage
+
+1. **GetAllDoctor**: Run this view to get a list of all doctors in the database.
+2. **DoctorsAppointments**: Run this view to get detailed information about doctors' appointments including patient details.
+3. **Doctors_Comprehensive_Financial_Impact**: Run this view to get insights into the financial impact of each doctor, grouped by department.
+4. **Doctors_Prescription_History**: Run this view to track the prescription history of doctors.
+
+## Notes
+
+- Ensure all the necessary tables (`Doctor`, `Appointment`, `Patient`, `Department`, `Billing`, `Prescription`, `Prescription_Medication`, and `Medication`) exist in your database schema before creating these views.
+- Modify the table names and columns as per your database schema if they differ.
+
+## Code
+![Doctor Views](https://github.com/user-attachments/assets/7ac04be7-0728-46c0-a108-76bf04fb1ae6)
+
+
+# Appointment Stored Procedures
+
+This repository contains SQL scripts to create stored procedures for managing appointments, including creating, updating, and deleting appointments.
+
+## Procedures Overview
+
+### 1. `CreateAppointment`
+Creates a new appointment if the doctor and patient IDs exist in the `Doctor` and `Patient` tables respectively.
+
+### 2. `UpdateAppointment`
+Updates an existing appointment if the appointment ID exists in the `Appointment` table.
+
+### 3. `DeleteAppointment`
+Deletes an existing appointment if the appointment ID exists in the `Appointment` table.
+
+## Usage
+
+1. **CreateAppointment**: 
+    - Parameters:
+        - `@app_date` (date): The date of the appointment.
+        - `@status` (varchar(50)): The status of the appointment.
+        - `@pt_id` (int): The patient ID.
+        - `@dr_id` (int): The doctor ID.
+    - This procedure checks if the provided doctor and patient IDs exist. If they do, it inserts a new record into the `Appointment` table.
+
+2. **UpdateAppointment**:
+    - Parameters:
+        - `@app_id` (int): The appointment ID.
+        - `@app_date` (date): The new date for the appointment.
+        - `@status` (varchar(50)): The new status for the appointment.
+    - This procedure checks if the provided appointment ID exists. If it does, it updates the appointment date and status.
+
+3. **DeleteAppointment**:
+    - Parameters:
+        - `@app_id` (int): The appointment ID.
+    - This procedure checks if the provided appointment ID exists. If it does, it deletes the record from the `Appointment` table.
+
+## Notes
+
+- Ensure all the necessary tables (`Doctor`, `Patient`, `Appointment`) exist in your database schema before creating these procedures.
+- Modify the table names and columns as per your database schema if they differ.
+
+## Code
+![Appointment Porc](https://github.com/user-attachments/assets/f5bcdd22-2016-4ef6-91d7-9cf39c2c6fc2)
+
