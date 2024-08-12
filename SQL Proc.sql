@@ -536,4 +536,152 @@ BEGIN
 END
 GO
 
+/* //////////////// Room Proc //////////////// */
+create proc CreateRoom
+@type varchar(75),
+@d_id int
+as
+begin
+	If EXISTS(select department_id from Department where department_id = @d_id)
+	begin
+		insert into Room(type, department_id)
+		values(@type, @d_id)
+		select 'Room Created successfully.' as Message
+	end
+
+	select 'Department Id not found.' as Message
+	
+end;
+GO
+
+create proc DeleteRoom
+@id int
+as 
+begin
+		If EXISTS(select room_number from Room where room_number = @id)
+		begin
+			delete from Room where room_number = @id
+
+			select 'Room deleted successfully.' as Message
+		end
+
+		else select 'Room not found.' as Message
+end;
+GO
+
+create proc UpdateRoom
+@id int,
+@type varchar(75),
+@d_id int
+as
+begin
+
+	If EXISTS(select room_number from Room where room_number = @id)
+	begin
+		If EXISTS(select department_id from Department where department_id = @d_id)
+		begin
+			update Room
+			set
+				type = @type, 
+				department_id = @d_id
+
+			where room_number = @id
+			select 'Medication Updated successfully.' as Message
+		 end
+
+		else select 'Department not found.' as Message
+
+	end
+
+	else select 'Medication not found.' as Message
+end
+GO
+
+/* //////////////// Prescription Proc //////////////// */
+create proc CreatePrescription
+@do varchar(100),
+@sd date,
+@freq varchar(100),
+@ed date,
+@did int
+as
+begin
+
+	IF EXISTS (select 1 from Doctor where doctor_id = @did)
+	begin
+		insert into Prescription(dosage, start_date, frequency, end_date, doctor_id )
+		values(@do, @sd, @freq, @ed, @did)
+	end
+
+	else select 'Doctor Id not found' as Message
+
+	select 'Prescription has been created' as Message
+end;
+GO
+
+CREATE PROCEDURE UpdatePrescription
+    @id INT,
+    @do varchar(100) = NULL,
+	@sd date = NULL,
+	@freq varchar(100) = NULL,
+	@ed date = NULL
+AS
+BEGIN
+    IF EXISTS(SELECT 1 FROM Prescription WHERE prescription_id = @id)
+    BEGIN
+        DECLARE @sql NVARCHAR(MAX)
+        SET @sql = 'UPDATE Prescription SET '
+        
+        IF @do IS NOT NULL
+        BEGIN
+            SET @sql = @sql + 'dosage = @do, '
+        END
+        
+        IF @sd IS NOT NULL
+        BEGIN
+            SET @sql = @sql + 'start_date = @sd, '
+        END
+        
+        IF @freq IS NOT NULL
+        BEGIN
+            SET @sql = @sql + 'frequency = @freq, '
+        END
+        
+        IF @ed IS NOT NULL
+        BEGIN
+            SET @sql = @sql + 'end_date = @ed, '
+        END
+
+        -- Remove the trailing comma and space
+        SET @sql = LEFT(@sql, LEN(@sql) - 2)
+        
+        SET @sql = @sql + ' WHERE prescription_id = @id'
+        
+        -- Execute the dynamic SQL
+        EXEC sp_executesql @sql,
+            N'@id INT, @do VARCHAR(100), @sd DATE, @freq VARCHAR(100), @ed DATE',
+            @id, @do, @sd, @freq, @ed
+    END
+    ELSE
+    BEGIN
+        SELECT 'Prescription Not Found' AS Message
+    END
+END
+GO
+
+create proc DeletePrescription
+@id int
+as 
+begin
+		If EXISTS(select 1 from Prescription where prescription_id = @id)
+		begin
+			delete from Prescription where prescription_id = @id
+
+			select 'Prescription deleted successfully.' as Message
+		end
+
+		else select 'Prescription not found.' as Message
+end;
+GO
+
 
