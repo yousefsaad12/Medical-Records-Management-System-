@@ -684,4 +684,117 @@ begin
 end;
 GO
 
+/* //////////////// Staff Proc //////////////// */
+create proc CreateStaff
+@f_name varchar(50),
+@l_name varchar(50),
+@role varchar(50),
+@email varchar(250),
+@phone varchar(75) = NULL,
+@d_id int
+as
+begin 
+	if EXISTS (select 1 from Department where department_id = @d_id)
+	begin
+		insert into Staff(first_name, last_name, role ,phone, email, department_id)
+		values(@f_name, @l_name, @role ,@phone, @email, @d_id)
+	end
+
+	else select 'Department Not Found' as Message
+end
+GO
+
+CREATE PROCEDURE UpdateStaff
+    @id INT,
+    @f_name varchar(50) = NULL,
+	@l_name varchar(50) = NULL,
+	@role varchar(50) = NULL,
+	@email varchar(250) = NULL,
+	@phone varchar(75) = NULL,
+	@d_id int = NULL
+AS
+BEGIN
+    IF EXISTS(SELECT 1 FROM Staff WHERE staff_id = @id)
+    BEGIN
+        DECLARE @sql NVARCHAR(MAX)
+        SET @sql = 'UPDATE Staff SET '
+        
+        IF @f_name IS NOT NULL
+        BEGIN
+            SET @sql = @sql + 'first_name = @f_name, '
+        END
+        
+        IF @l_name IS NOT NULL
+        BEGIN
+            SET @sql = @sql + 'last_name = @l_name, '
+        END
+        
+        IF @phone IS NOT NULL
+        BEGIN
+            SET @sql = @sql + 'phone = @phone, '
+        END
+        
+        IF @email IS NOT NULL
+        BEGIN
+            SET @sql = @sql + 'email = @email, '
+        END
+        
+        IF @role IS NOT NULL
+        BEGIN
+            SET @sql = @sql + 'role = @role, '
+        END
+
+		IF @d_id IS NOT NULL
+        BEGIN
+			IF EXISTS (select 1 from Department where department_id = @d_id)
+				BEGIN
+					SET @sql = @sql + 'department_id = @d_id, '
+				END
+       
+			ELSE 
+				BEGIN
+					SELECT 'Department Not Found' AS Message
+					RETURN
+				END
+			
+        END
+
+        -- Remove the trailing comma and space
+        SET @sql = LEFT(@sql, LEN(@sql) - 2)
+        
+        SET @sql = @sql + ' WHERE staff_id = @id'
+        
+        -- Execute the dynamic SQL
+        EXEC sp_executesql @sql,
+            N'@id INT, @f_name VARCHAR(50), @l_name VARCHAR(50), @role VARCHAR(50), @phone varchar(75), @email VARCHAR(250), @d_id INT',
+            @id, @f_name, @l_name, @role, @phone, @email, @d_id
+    END
+    ELSE
+    BEGIN
+        SELECT 'Staff Not Found' AS Message
+    END
+END
+GO
+
+CREATE PROCEDURE DeleteStaff
+@id INT
+AS
+BEGIN
+    
+    IF EXISTS(SELECT 1 FROM Staff WHERE staff_id = @id)
+    BEGIN
+        
+        DELETE FROM Staff
+        WHERE staff_id = @id
+        
+        SELECT 'Staff deleted successfully' AS Message
+    END
+    ELSE
+    BEGIN
+        
+        SELECT 'Staff Not Found' AS Message
+    END
+END
+GO
+
 
