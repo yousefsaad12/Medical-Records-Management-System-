@@ -798,3 +798,105 @@ END
 GO
 
 
+/* //////////////// Nurse Room Proc //////////////// */
+
+create proc CreateNurseRoom
+@rn int,
+@nurse_id int,
+@h time(7) = NULL
+as
+begin
+	IF EXISTS (select 1 from Nurse where nurse_id = @nurse_id)
+	begin
+		IF EXISTS (select 1 from Room where room_number = @rn)
+		begin
+			insert into Nurse_Room(room_number, nurse_id, Hours)
+			values(@rn, @nurse_id, @h)
+
+			
+		end
+		else select 'Room Number Not Found' as Message
+	end
+	else select 'Nurse Not Found' as Message
+end;
+GO
+
+CREATE PROCEDURE UpdateNurseRoom
+    @current_rn INT,
+    @current_nurse_id INT,
+    @new_rn INT = NULL,
+    @new_nurse_id INT = NULL,
+    @new_h TIME(7) = NULL
+AS
+BEGIN
+  
+    IF EXISTS (SELECT 1 FROM Nurse_Room WHERE room_number = @current_rn AND nurse_id = @current_nurse_id)
+    BEGIN
+        DECLARE @sql NVARCHAR(MAX)
+        DECLARE @paramDefinition NVARCHAR(MAX)
+
+        SET @sql = N'UPDATE Nurse_Room SET '
+        SET @paramDefinition = N'@current_rn INT, @current_nurse_id INT'
+
+        -- Build the dynamic SET clause
+        IF @new_rn IS NOT NULL
+        BEGIN
+            SET @sql = @sql + N'room_number = @new_rn, '
+            SET @paramDefinition = @paramDefinition + N', @new_rn INT'
+        END
+
+        IF @new_nurse_id IS NOT NULL
+        BEGIN
+            SET @sql = @sql + N'nurse_id = @new_nurse_id, '
+            SET @paramDefinition = @paramDefinition + N', @new_nurse_id INT'
+        END
+
+        IF @new_h IS NOT NULL
+        BEGIN
+            SET @sql = @sql + N'Hours = @new_h, '
+            SET @paramDefinition = @paramDefinition + N', @new_h TIME(7)'
+        END
+
+        -- Remove the last comma and space
+        SET @sql = LEFT(@sql, LEN(@sql) - 2)
+
+       
+        SET @sql = @sql + N' WHERE room_number = @current_rn AND nurse_id = @current_nurse_id'
+
+        -- Execute the dynamic SQL
+        EXEC sp_executesql @sql,
+            @paramDefinition,
+            @current_rn = @current_rn,
+            @current_nurse_id = @current_nurse_id,
+            @new_rn = @new_rn,
+            @new_nurse_id = @new_nurse_id,
+            @new_h = @new_h
+    END
+    ELSE
+    BEGIN
+        SELECT 'Nurse Room combination Not Found' AS Message
+    END
+END;
+GO
+
+create proc DeleteNurseRoom
+@rn int,
+@nurse_id int
+as
+begin
+	IF EXISTS (select 1 from Nurse where nurse_id = @nurse_id)
+	begin
+		IF EXISTS (select 1 from Room where room_number = @rn)
+		begin
+			delete from Nurse_Room
+			where room_number = @rn 
+			and nurse_id = @nurse_id;
+			select 'Nurse Room has been deleted' as Message
+		end
+		else select 'Room Number Not Found' as Message
+	end
+	else select 'Nurse Not Found' as Message
+end;
+GO
+
+
