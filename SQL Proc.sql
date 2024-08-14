@@ -800,7 +800,7 @@ GO
 
 /* //////////////// Nurse Room Proc //////////////// */
 
-create proc CreateNurseRoom
+CREATE proc CreateNurseRoom
 @rn int,
 @nurse_id int,
 @h time(7) = NULL
@@ -898,5 +898,135 @@ begin
 	else select 'Nurse Not Found' as Message
 end;
 GO
+
+/* //////////////// Medical Record Proc //////////////// */
+
+create proc CreateMedicalRecord
+@diagnosis varchar(300),
+@record_date date,
+@treatment varchar(300) = NULL,
+@patient_id int,
+@doctor_id int
+as
+begin
+	IF EXISTS (select 1 from Patient where patient_id = @patient_id)
+	begin
+		IF EXISTS (select 1 from Doctor where doctor_id = @doctor_id)
+		begin
+			insert into Medical_Record (diagnosis, record_date, treatment, patient_id,  doctor_id)
+			values(@diagnosis, @record_date, @treatment, @patient_id, @doctor_id)
+
+			select 'Medical Record has been added' as Message
+		end
+		else select 'Doctor Not Found' as Message
+	end
+	else select 'Patient Not Found' as Message
+end;
+GO
+
+CREATE PROCEDURE UpdateMedicalRecord
+    @record_id INT,
+    @new_diagnosis VARCHAR(300) = NULL,
+    @new_record_date DATE = NULL,
+    @new_treatment VARCHAR(300) = NULL,
+    @new_patient_id INT = NULL,
+    @new_doctor_id INT = NULL
+AS
+BEGIN
+    -- Check if the record exists
+    IF EXISTS (SELECT 1 FROM Medical_Record WHERE record_id = @record_id)
+    BEGIN
+        -- Check if the new patient_id exists, if provided
+        IF @new_patient_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM Patient WHERE patient_id = @new_patient_id)
+        BEGIN
+            SELECT 'New Patient Not Found' AS Message
+            RETURN
+        END
+        
+        -- Check if the new doctor_id exists, if provided
+        IF @new_doctor_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM Doctor WHERE doctor_id = @new_doctor_id)
+        BEGIN
+            SELECT 'New Doctor Not Found' AS Message
+            RETURN
+        END
+
+        DECLARE @sql NVARCHAR(MAX)
+        DECLARE @paramDefinition NVARCHAR(MAX)
+
+        SET @sql = N'UPDATE Medical_Record SET '
+        SET @paramDefinition = N'@record_id INT'
+
+        -- Build the dynamic SET clause
+        IF @new_diagnosis IS NOT NULL
+        BEGIN
+            SET @sql = @sql + N'diagnosis = @new_diagnosis, '
+            SET @paramDefinition = @paramDefinition + N', @new_diagnosis VARCHAR(300)'
+        END
+
+        IF @new_record_date IS NOT NULL
+        BEGIN
+            SET @sql = @sql + N'record_date = @new_record_date, '
+            SET @paramDefinition = @paramDefinition + N', @new_record_date DATE'
+        END
+
+        IF @new_treatment IS NOT NULL
+        BEGIN
+            SET @sql = @sql + N'treatment = @new_treatment, '
+            SET @paramDefinition = @paramDefinition + N', @new_treatment VARCHAR(300)'
+        END
+
+        IF @new_patient_id IS NOT NULL
+        BEGIN
+            SET @sql = @sql + N'patient_id = @new_patient_id, '
+            SET @paramDefinition = @paramDefinition + N', @new_patient_id INT'
+        END
+
+        IF @new_doctor_id IS NOT NULL
+        BEGIN
+            SET @sql = @sql + N'doctor_id = @new_doctor_id, '
+            SET @paramDefinition = @paramDefinition + N', @new_doctor_id INT'
+        END
+
+        -- Remove the last comma and space
+        SET @sql = LEFT(@sql, LEN(@sql) - 2)
+
+        -- Add the WHERE clause
+        SET @sql = @sql + N' WHERE record_id = @record_id'
+
+        -- Execute the dynamic SQL
+        EXEC sp_executesql @sql,
+            @paramDefinition,
+            @record_id = @record_id,
+            @new_diagnosis = @new_diagnosis,
+            @new_record_date = @new_record_date,
+            @new_treatment = @new_treatment,
+            @new_patient_id = @new_patient_id,
+            @new_doctor_id = @new_doctor_id
+
+        SELECT 'Medical Record has been updated' AS Message
+    END
+    ELSE
+    BEGIN
+        SELECT 'Medical Record Not Found' AS Message
+    END
+END;
+GO
+
+
+create proc DeleteMedicalRecord
+@mr int
+as
+begin
+	IF EXISTS (select 1 from Medical_Record where record_id = @mr )
+	begin
+			delete from Medical_Record
+			where record_id = @mr 
+
+			select 'Medical Record has been deleted' as Message
+	end
+	else select 'Medical Record Not Found' as Message
+end;
+GO
+
 
 
